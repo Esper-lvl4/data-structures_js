@@ -1,11 +1,40 @@
-export class LinkedList {
-  head?: LinkedListPart;
-  tail?: LinkedListPart;
-  constructor(head?: LinkedListPart) {
-    this.head = head;
-    this.tail = head;
+export class LinkedList<T> {
+  head?: LinkedListPart<T>;
+  tail?: LinkedListPart<T>;
+  size: number;
+  constructor(values?: T | T[]) {
+    this.size = 0;
+    if (!values) return;
+    if (Array.isArray(values)) {
+      if (values.length === 0) return;
+      if (values.length === 1) {
+        this.head = new LinkedListPart(values[0]);
+        this.tail = this.head;
+        this.size = 1;
+        return;
+      }
+      let previous: LinkedListPart<T> | null = null
+      values.forEach(value => {
+        this.size += 1;
+        if (!previous) {
+          this.head = new LinkedListPart(value);
+          previous = this.head;
+          return;
+        }
+        const newPart = new LinkedListPart(value);
+        previous.next = newPart;
+        previous = newPart;
+      });
+      this.tail = previous ? previous : this.head;
+      return;
+    }
+    this.head = new LinkedListPart(values);
+    this.tail = this.head;
+    this.size = 1;
   }
-  add(part: LinkedListPart) {
+  add(value: T) {
+    const part = new LinkedListPart(value);
+    this.size += 1;
     if (!this.tail) {
       this.head = part;
       this.tail = part;
@@ -14,7 +43,9 @@ export class LinkedList {
     this.tail.next = part;
     this.tail = part;
   }
-  prepend(part: LinkedListPart) {
+  prepend(value: T) {
+    const part = new LinkedListPart(value);
+    this.size += 1;
     if (!this.head) {
       this.head = part;
       this.tail = part;
@@ -23,28 +54,30 @@ export class LinkedList {
     part.next = this.head;
     this.head = part;
   }
-  contains(value: string): boolean {
-    let current: LinkedListPart | undefined = this.head;
+  contains(value: T): boolean {
+    let current: LinkedListPart<T> | undefined = this.head;
     while (current) {
       if (current.value === value) return true;
       current = current.next;
     }
     return false;
   }
-  remove(value: string): boolean {
+  remove(value: T): boolean {
     if (!this.head) return false;
     if (this.head.value === value) {
       if (this.head === this.tail) {
         this.head = undefined;
         this.tail = undefined;
+        this.size = 0;
       } else {
         this.head = this.head.next;
+        this.size -= 1;
       }
       return true;
     }
 
     if (!this.head.next) return false;
-    let current: LinkedListPart | undefined = this.head.next;
+    let current: LinkedListPart<T> | undefined = this.head.next;
     while (current.next && current.next.value !== value) {
       current = current.next;
     }
@@ -55,23 +88,24 @@ export class LinkedList {
     } else {
       current.next = current.next.next;
     }
+    this.size -= 1;
     return true;
   }
 
-  *traverse(): IterableIterator<string | undefined> {
+  *traverse(): IterableIterator<T | undefined> {
     if (!this.head) return;
-    let current: LinkedListPart | undefined = this.head;
+    let current: LinkedListPart<T> | undefined = this.head;
     while (current) {
       yield current.value;
       current = current.next;
     }
   }
 
-  *reverseTraversal(): IterableIterator<string | undefined> {
+  *reverseTraversal(): IterableIterator<T | undefined> {
     if (!this.tail) return;
-    let current: LinkedListPart | undefined = this.tail;
+    let current: LinkedListPart<T> | undefined = this.tail;
     while (current && current !== this.head) {
-      let previous: LinkedListPart | undefined = this.head;
+      let previous: LinkedListPart<T> | undefined = this.head;
       while (previous && previous.next !== current) {
         previous = previous.next;
       }
@@ -82,10 +116,10 @@ export class LinkedList {
   }
 }
 
-export class LinkedListPart {
-  value: string;
-  next?: LinkedListPart;
-  constructor(value: string, next?: LinkedListPart) {
+export class LinkedListPart<T> {
+  value: T;
+  next?: LinkedListPart<T>;
+  constructor(value: T, next?: LinkedListPart<T>) {
     this.value = value;
     this.next = next;
   }

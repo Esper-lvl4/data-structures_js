@@ -84,6 +84,8 @@ export class DoublyLinkedList<T> {
       if (current.value === value) {
         if (current.prev) current.prev.next = current.next;
         if (current.next) current.next.prev = current.prev;
+        if (current === this.head) this.head = current.next;
+        if (current === this.tail) this.tail = current.prev;
         current.next = undefined;
         current.prev = undefined;
         this.size -= 1;

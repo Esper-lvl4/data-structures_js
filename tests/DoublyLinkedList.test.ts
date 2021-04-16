@@ -47,4 +47,11 @@ Deno.test("DoublyLinkedList - methods", () => {
     assertEquals(value, factualValues[index]);
   });
 
+  // Head and tail is correctly reassigned when removing.
+  list.remove(100);
+  assertEquals(list.head?.value, 77);
+
+  list.remove(36);
+  assertEquals(list.tail?.value, 88);
+
 });

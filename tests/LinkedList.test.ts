@@ -1,5 +1,5 @@
 import { assertEquals, assertNotEquals } from "https://deno.land/std@0.84.0/testing/asserts.ts";
-import { LinkedList} from "../structures/LinkedList.ts";
+import { LinkedList } from "../structures/LinkedList.ts";
 import { mergeSortLinkedList } from "../sorting.ts";
 
 Deno.test("LinkedList - methods", () => {

@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from "https://deno.land/std@0.84.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.84.0/testing/asserts.ts";
 import Stack from "../structures/Stack.ts";
 
 Deno.test("Stack - methods", () => {

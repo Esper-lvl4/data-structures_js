@@ -1,4 +1,4 @@
-import { assertEquals, assert } from "https://deno.land/std@0.84.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.84.0/testing/asserts.ts";
 import BinaryHeap from "../structures/BinaryHeap.ts"
 
 Deno.test("BinaryHeap - building", () => {

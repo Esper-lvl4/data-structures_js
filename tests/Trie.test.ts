@@ -26,5 +26,4 @@ Deno.test("Trie - building", () => {
   const testStrings = ['wow', 'kappa', 'lel'];
   trie.insertMany(testStrings);
   testStrings.forEach((str: string) => testTrieString(trie, str));
-  console.log(trie);
 });

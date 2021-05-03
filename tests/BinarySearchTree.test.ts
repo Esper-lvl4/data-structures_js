@@ -7,12 +7,12 @@ Deno.test("BinarySearchTree - methods", () => {
   assertEquals(tree.size, 1);
 
   tree.insert(31);
-  assertEquals(2, tree.size);
-  assertEquals(31, tree.root?.left?.value);
-  assertNotEquals(31, tree.root?.right?.value);
+  assertEquals(tree.size, 2);
+  assertEquals(tree.root?.left?.value, 31);
+  assertNotEquals(tree.root?.right?.value, 31);
 
   tree.insert(38);
-  assertEquals(3, tree.size);
+  assertEquals(tree.size, 3);
   assertEquals(tree.root?.left?.right?.value, 38);
 
   tree.insert(28);
@@ -52,6 +52,29 @@ Deno.test("BinarySearchTree - methods", () => {
   let i = 0;
   for (const value of tree.traverseInOrder()) {
     assertEquals(value, values[i]);
+    i++;
+  }
+
+  i = 0;
+  const reverseValues = values.reverse();
+  console.log(reverseValues);
+  for (const value of tree.traverseInReverseOrder()) {
+    assertEquals(value, reverseValues[i]);
+    i++;
+  }
+
+  i = 0;
+  const preOrderValues = [45, 34, 28, 38, 35, 50, 47, 52];
+  for (const value of tree.traversePreOrder(tree.root)) {
+    assertEquals(value, preOrderValues[i]);
+    i++;
+  }
+
+  i = 0;
+  const postOrderValues = [28, 35, 38, 34, 47, 52, 50, 45];
+  for (const value of tree.traversePostOrder(tree.root)) {
+    console.log(value);
+    assertEquals(value, postOrderValues[i]);
     i++;
   }
 });

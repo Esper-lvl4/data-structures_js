@@ -187,13 +187,13 @@ export class BinarySearchTree<T> {
       }
       const currentMapItem = collectedChildren[key];
 
+      // If there're left elements and they are not visited already.
       if (current.left && !currentMapItem.left) {
-        console.log('goes left: ', current.value);
         branch.push(current);
         currentMapItem.left = true;
         current = current.left;
+      // Else if there're right elements and they are not visited already.
       } else if (current && current.right && !currentMapItem.right) {
-        console.log('goes right: ', current.value);
         yield current.value;
         if (currentMapItem.left) {
           branch.pop();
@@ -202,12 +202,67 @@ export class BinarySearchTree<T> {
         }
         currentMapItem.right = true;
         current = current.right;
+      // No right or left elements that are not visited.
       } else {
-        console.log('just yields: ', current.value);
         yield current.value;
         current = branch.pop();
       }
     }
+  }
+
+  *traverseInReverseOrder(): IterableIterator<T> {
+    if (!this.root) return;
+    let current: BinarySearchTreeNode<T> | undefined  = this.root;
+    const collectedChildren: { [key: string]: { left: boolean, right: boolean} } = {};
+    const branch: Stack<BinarySearchTreeNode<T>> = new Stack();
+
+    while (current) {
+      const key = current.value + ''
+      if (!collectedChildren[key]) {
+        collectedChildren[key] = { left: false, right: false };
+      }
+      const currentMapItem = collectedChildren[key];
+
+      if (current.right && !currentMapItem.right) {
+        branch.push(current);
+        currentMapItem.right = true;
+        current = current.right;
+      } else if (current && current.left && !currentMapItem.left) {
+        yield current.value;
+        if (currentMapItem.right) {
+          branch.pop();
+        } else {
+          branch.push(current);
+        }
+        currentMapItem.left = true;
+        current = current.left;
+      } else {
+        yield current.value;
+        current = branch.pop();
+      }
+    }
+  }
+
+  *traversePreOrder(current?: BinarySearchTreeNode<T>): IterableIterator<T> {
+    if (!current) return;
+    yield current.value;
+    for (const value of this.traversePreOrder(current.left)) {
+      yield value;
+    }
+    for (const value of this.traversePreOrder(current.right)) {
+      yield value;
+    }
+  }
+
+  *traversePostOrder(current?: BinarySearchTreeNode<T>): IterableIterator<T> {
+    if (!current) return;
+    for (const value of this.traversePostOrder(current.left)) {
+      yield value;
+    }
+    for (const value of this.traversePostOrder(current.right)) {
+      yield value;
+    }
+    yield current.value;
   }
 }
 

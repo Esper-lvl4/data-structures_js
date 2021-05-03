@@ -57,7 +57,6 @@ Deno.test("BinarySearchTree - methods", () => {
 
   i = 0;
   const reverseValues = values.reverse();
-  console.log(reverseValues);
   for (const value of tree.traverseInReverseOrder()) {
     assertEquals(value, reverseValues[i]);
     i++;
@@ -73,7 +72,6 @@ Deno.test("BinarySearchTree - methods", () => {
   i = 0;
   const postOrderValues = [28, 35, 38, 34, 47, 52, 50, 45];
   for (const value of tree.traversePostOrder(tree.root)) {
-    console.log(value);
     assertEquals(value, postOrderValues[i]);
     i++;
   }

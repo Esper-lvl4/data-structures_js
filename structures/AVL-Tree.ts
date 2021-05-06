@@ -1,5 +1,31 @@
 import Stack from "./Stack.ts";
 
+interface RebalanceInfo<T> {
+  unbalanced: AVLTreeNode<T>;
+  parent?: AVLTreeNode<T>;
+  child: AVLTreeNode<T>;
+  grandChild: AVLTreeNode<T>;
+  tree: AVLTree<T>;
+}
+
+function rebalanceRight<T>(info: RebalanceInfo<T>) {
+  const { unbalanced, parent, child, grandChild, tree } = info;
+  if (parent) {
+    parent.left = child;
+  } else {
+    tree.setRoot(child);
+  }
+}
+function rebalanceLeft<T>(info: RebalanceInfo<T>) {}
+function rebalanceLeftRight<T>(info: RebalanceInfo<T>) {}
+function rebalanceRightLeft<T>(info: RebalanceInfo<T>) {}
+
+function isAVLTreeNode<T>(item: any): item is AVLTreeNode<T>  {
+  if (typeof item !== 'object' || !item) return false;
+  return item.value !== undefined && typeof item.count === 'number'
+    && item.hasOwnProperty('left') && item.hasOwnProperty('right');
+}
+
 export class AVLTreeNode<T> {
   value: T;
   count: number;
@@ -31,18 +57,6 @@ export class AVLTreeNode<T> {
     return this.rightHeight - this.leftHeight;
   }
 
-  get hasBothChildren(): boolean {
-    return !!this.left && !!this.right;
-  }
-
-  get hasChildren(): boolean {
-    return !!this.left || !!this.right;
-  }
-
-  get hasNoChildren(): boolean {
-    return !this.left && !this.right;
-  }
-
   addDuplicate() {
     this.count++;
   }
@@ -62,6 +76,14 @@ export class AVLTree<T> {
       this.root = new AVLTreeNode(value);
       this.size = 1;
     } 
+  }
+
+  setRoot(value: T | AVLTreeNode<T>) {
+    if (isAVLTreeNode(value)) {
+      this.root = value;
+      return;
+    }
+    this.root = new AVLTreeNode(value);
   }
 
   insert(value: T) {
@@ -107,7 +129,34 @@ export class AVLTree<T> {
   }
 
   rebalance(startingNode: AVLTreeNode<T>, currentBranch: Stack<AVLTreeNode<T>>) {
+    let current: AVLTreeNode<T> | undefined = startingNode;
+    const saved: AVLTreeNode<T>[] = [];
+    while (current && Math.abs(current.balance) < 2) {
+      saved.push(current);
+      current = currentBranch.pop();
+    }
+    if (!current) return;
+    const unbalanced = current;
+    const child = saved.pop();
+    const grandChild = saved.pop();
+    const parent = currentBranch.pop();
+    if (!child || !grandChild) throw new Error('AVL tree is corrupted - balance is more then 2 but there is no child or grandchild of unbalanced node!');
 
+    if (unbalanced.balance === 2 && child.balance === 1) {
+      return rebalanceLeft({ unbalanced, child, grandChild, parent, tree: this });
+    }
+
+    if (unbalanced.balance === -2 && child.balance === -1) {
+      return rebalanceRight({ unbalanced, child, grandChild, parent, tree: this });
+    }
+
+    if (unbalanced.balance === 2 && child.balance === -1) {
+      return rebalanceRightLeft({ unbalanced, child, grandChild, parent, tree: this });
+    }
+
+    if (unbalanced.balance === -2 && child.balance === 1) {
+      return rebalanceLeftRight({ unbalanced, child, grandChild, parent, tree: this });
+    }
   }
 
   *traversePreOrder(current?: AVLTreeNode<T>): IterableIterator<T> {

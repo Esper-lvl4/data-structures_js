@@ -30,18 +30,10 @@ function rebalanceLeft<T>(info: Omit<RebalanceInfo<T>, 'grandChild'>) {
 }
 function rebalanceLeftRight<T>(info: RebalanceInfo<T>) {
   const { unbalanced, parent, child, grandChild, tree } = info;
-  // rebalanceLeft({
-  //   unbalanced: child,
-  //   parent: unbalanced,
-  //   child: grandChild,
-  //   tree,
-  // });
-  console.log(unbalanced.value, child.value, grandChild.value);
+
   unbalanced.left = grandChild;
-  grandChild.left = child;
   child.right = grandChild.left;
-
-
+  grandChild.left = child;
 
   rebalanceRight({
     unbalanced,
@@ -52,15 +44,11 @@ function rebalanceLeftRight<T>(info: RebalanceInfo<T>) {
 }
 function rebalanceRightLeft<T>(info: RebalanceInfo<T>) {
   const { unbalanced, parent, child, grandChild, tree } = info;
-  // rebalanceRight({
-  //   unbalanced: child,
-  //   parent: unbalanced,
-  //   child: grandChild,
-  //   tree,
-  // });
+
   unbalanced.right = grandChild;
-  grandChild.right = child;
   child.left = grandChild.right;
+  grandChild.right = child;
+
   rebalanceLeft({
     unbalanced,
     parent,
@@ -155,6 +143,7 @@ export class AVLTree<T> {
         current.addDuplicate();
         return;
       }
+      branch.push(current);
       if (value < current.value) {
         if (!current.left) {
           current.left = newNode;
@@ -162,7 +151,6 @@ export class AVLTree<T> {
           this.rebalance(newNode, branch);
           return;
         }
-        branch.push(current);
         current = current.left;
       } else {
         if (!current.right) {
@@ -171,7 +159,6 @@ export class AVLTree<T> {
           this.rebalance(newNode, branch);
           return;
         }
-        branch.push(current);
         current = current.right;
       }
     }
